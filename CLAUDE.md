@@ -96,4 +96,10 @@ compile_crud.bat             # CRUD 앱 빌드 & 실행
 
 ## 개발 플랜 참조
 
-`docs/PLAN.md` 참조.
+- 전체 플랜: `docs/PLAN.md`
+- Phase별 상세 설계:
+  - Phase 1 — 도메인 모델 & Repository: `docs/design/phase1.md`
+  - Phase 2 — Service 계층: `docs/design/phase2.md`
+  - Phase 3 — 콘솔 UI: `docs/design/phase3.md`
+  - Phase 4 — 빌드 & 통합 검증: `docs/design/phase4.md`
+  - Phase 5 — GitHub Push & 문서화: `docs/design/phase5.md`
