@@ -28,6 +28,9 @@ public class JsonFileRepositoryTest {
             testSaveAndFindAll();
             testSaveEmptyList();
             testFindAllPreservesOrder();
+            testInitIOException();
+            testFindAllIOException();
+            testSaveAllIOException();
         } catch (IOException e) {
             System.out.println("  [IO 오류] " + e.getMessage());
             failed++;
@@ -113,6 +116,44 @@ public class JsonFileRepositoryTest {
         }
     }
 
+    // ── IOException 경로 ─────────────────────────────────────
+
+    static void testInitIOException() throws IOException {
+        section("init() IOException — 부모가 파일인 경우");
+        // 정규 파일을 부모로 지정 → Files.createDirectories(regularFile) → FileAlreadyExistsException
+        Path parentFile = Files.createTempFile("init_parent_", ".txt");
+        temps.add(parentFile);
+        Path target = parentFile.resolve("records.json");
+        assertThrowsRuntime(() -> new JsonFileRepository(target.toString()),
+                "init IOException → RuntimeException");
+    }
+
+    static void testFindAllIOException() throws IOException {
+        section("findAll() IOException — 파일 경로가 디렉토리인 경우");
+        Path dir = Files.createTempDirectory("findall_dir_");
+        Path fileAsDir = dir.resolve("records.json");
+        Files.createDirectory(fileAsDir);
+        // cleanup 순서: 자식 먼저, 부모 나중
+        temps.add(fileAsDir);
+        temps.add(dir);
+        // init()은 성공(디렉토리가 이미 존재하므로 writeString 건너뜀)
+        // findAll()에서 Files.readString(directory) → IOException
+        JsonFileRepository repo = new JsonFileRepository(fileAsDir.toString());
+        assertThrowsRuntime(() -> repo.findAll(), "findAll IOException → RuntimeException");
+    }
+
+    static void testSaveAllIOException() throws IOException {
+        section("saveAll() IOException — 파일 경로가 디렉토리인 경우");
+        Path dir = Files.createTempDirectory("saveall_dir_");
+        Path fileAsDir = dir.resolve("records.json");
+        Files.createDirectory(fileAsDir);
+        temps.add(fileAsDir);
+        temps.add(dir);
+        JsonFileRepository repo = new JsonFileRepository(fileAsDir.toString());
+        assertThrowsRuntime(() -> repo.saveAll(new ArrayList<>()),
+                "saveAll IOException → RuntimeException");
+    }
+
     // ── 헬퍼 ────────────────────────────────────────────────
 
     static JsonFileRepository newRepo() throws IOException {
@@ -143,5 +184,16 @@ public class JsonFileRepositoryTest {
     static void assert_(boolean cond, String label) {
         if (cond) { System.out.println("    PASS: " + label); passed++; }
         else       { System.out.println("    FAIL: " + label); failed++; }
+    }
+
+    static void assertThrowsRuntime(Runnable r, String label) {
+        try {
+            r.run();
+            System.out.println("    FAIL (예외 미발생): " + label);
+            failed++;
+        } catch (RuntimeException e) {
+            System.out.println("    PASS (예외 발생): " + label + " -> " + e.getMessage());
+            passed++;
+        }
     }
 }
