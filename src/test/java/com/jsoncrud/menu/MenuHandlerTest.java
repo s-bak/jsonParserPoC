@@ -34,6 +34,7 @@ public class MenuHandlerTest {
             testReadByIdNotFound();
             testReadByFieldFound();
             testReadByFieldNotFound();
+            testReadByFieldEmptyKey();
             testReadSubMenuInvalid();
             testUpdateNormal();
             testUpdateIdNotFound();
@@ -127,6 +128,12 @@ public class MenuHandlerTest {
         svc.create(map("name", "Alice"));
         String out = run(svc, "2\n3\nname\nxyz\n0\n");
         assert_(out.contains("검색 결과가 없습니다."), "검색 결과 없음 메시지");
+    }
+
+    static void testReadByFieldEmptyKey() throws IOException {
+        section("Read 필드 검색 — 빈 필드명");
+        String out = run(newService(), "2\n3\n\n0\n");
+        assert_(out.contains("필드명은 비어있을 수 없습니다."), "빈 필드명 메시지");
     }
 
     static void testReadSubMenuInvalid() throws IOException {

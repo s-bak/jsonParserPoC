@@ -162,7 +162,8 @@ public class JsonParserTest {
         assertThrows("\"unterminated",     "닫히지 않은 문자열");
         assertThrows("{",                  "닫히지 않은 객체");
         assertThrows("tru",               "잘못된 리터럴");
-        assertThrows("",                   "빈 입력");
+        assertThrows("",                   "빈 입력 (blank)");
+        assertThrows(null,                 "null 입력");
         assertThrows("{} extra",           "루트 이후 여분 토큰");
         assertThrowsAny(() -> JsonParser.parseObject("[1,2,3]"),   "parseObject에 배열 입력");
         assertThrowsAny(() -> JsonParser.parseArray("{\"k\":1}"),  "parseArray에 객체 입력");
