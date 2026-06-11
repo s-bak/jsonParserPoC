@@ -19,6 +19,7 @@ public class JsonLexerTest {
         testWhitespaceSkip();
         testEofToken();
         testErrors();
+        testJsonParseExceptionMethods();
         System.out.println("\n[JsonLexerTest 결과] " + passed + " 통과 / " + failed + " 실패");
     }
 
@@ -112,6 +113,26 @@ public class JsonLexerTest {
         assertThrows("-",          "단독 마이너스");
         assertThrows("@",          "알 수 없는 문자");
         assertThrows("\"\\",       "역슬래시 후 입력 끝");
+    }
+
+    // ── JsonParseException 메서드 커버리지 ───────────────────────
+
+    static void testJsonParseExceptionMethods() {
+        section("JsonParseException.getPosition()");
+        // 위치 있는 생성자
+        JsonParseException withPos = new JsonParseException("err", 7);
+        assert_(withPos.getPosition() == 7, "getPosition() — 위치 있는 생성자");
+
+        // 위치 없는 생성자 → -1
+        JsonParseException noPos = new JsonParseException("err");
+        assert_(noPos.getPosition() == -1, "getPosition() — 위치 없는 생성자 → -1");
+
+        // 실제 렉서가 던진 예외의 position 검증
+        try {
+            new JsonLexer("@").tokenize();
+        } catch (JsonParseException e) {
+            assert_(e.getPosition() >= 0, "렉서 예외 position >= 0");
+        }
     }
 
     // ── 헬퍼 ────────────────────────────────────────────────
