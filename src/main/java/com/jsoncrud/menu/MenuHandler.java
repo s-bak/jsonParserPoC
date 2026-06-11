@@ -162,6 +162,10 @@ public class MenuHandler {
             System.out.println("필드명은 비어있을 수 없습니다.");
             return;
         }
+        if (!found.get().getFields().containsKey(fieldKey)) {
+            System.out.println("필드 '" + fieldKey + "' 가 존재하지 않습니다.");
+            return;
+        }
         System.out.print("새로운 값: ");
         String newValue = scanner.nextLine();
 
