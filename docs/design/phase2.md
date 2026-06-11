@@ -74,11 +74,12 @@ Record update(int id, String fieldKey, String newValue)
 ```
 
 | 항목 | 내용 |
-|------|------|------|
-| 동작 | 해당 id 레코드의 `fields`에서 `fieldKey` 값을 `newValue`로 교체. `fieldKey`가 없으면 신규 추가. |
+|------|------|
+| 동작 | 해당 id 레코드의 `fields`에서 `fieldKey` 값을 `newValue`로 교체. |
 | 저장 | 수정된 전체 리스트를 `saveAll()` 호출. |
 | 반환 | 수정 후 `Record` |
 | 예외 | id가 존재하지 않으면 `IllegalArgumentException("ID {id} 를 찾을 수 없습니다.")` |
+| 예외 | `fieldKey`가 레코드에 없으면 `IllegalArgumentException("필드 '{fieldKey}' 가 존재하지 않습니다.")` |
 
 > **구현 노트**: `Record`는 불변이므로 수정 시 기존 fields를 복사한 뒤 변경 후 새 `Record` 인스턴스로 리스트를 교체한다.
 
@@ -134,6 +135,7 @@ src/main/java/com/jsoncrud/
 - [ ] `findAll` 빈 파일에서 빈 리스트 반환
 - [ ] `findById` 존재/비존재 양쪽 동작 확인
 - [ ] `findByField` 대소문자 무시 부분 일치 동작 확인
-- [ ] `update` 기존 필드 수정 및 신규 필드 추가 동작 확인
+- [ ] `update` 기존 필드 수정 동작 확인
+- [ ] `update` 존재하지 않는 `fieldKey` 입력 시 `IllegalArgumentException` 발생 확인
 - [ ] `update` / `delete` 없는 id 입력 시 `IllegalArgumentException` 발생 확인
 - [ ] `delete` 후 파일에서 해당 레코드 제거 확인
