@@ -6,10 +6,11 @@ import java.util.List;
 
 public class JsonParserTest {
 
-    private static int passed = 0;
-    private static int failed = 0;
+    public static int passed = 0;
+    public static int failed = 0;
 
     public static void main(String[] args) {
+        passed = 0; failed = 0;
         testPrimitives();
         testObject();
         testArray();
@@ -21,7 +22,6 @@ public class JsonParserTest {
         System.out.println("\n===========================");
         System.out.println("결과: " + passed + " 통과 / " + failed + " 실패");
         System.out.println("===========================");
-        if (failed > 0) System.exit(1);
     }
 
     // ---------- 원시 타입 ----------
