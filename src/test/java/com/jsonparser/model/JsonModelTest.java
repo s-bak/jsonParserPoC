@@ -86,6 +86,10 @@ public class JsonModelTest {
         // Long 범위 초과 → catch(NumberFormatException) → Double fallback
         JsonNumber bigNum = new JsonNumber("99999999999999999999");
         assert_(bigNum.getValue() instanceof Double,         "Long 오버플로 → Double fallback");
+
+        // contains(".")=false, contains("e")=false, contains("E")=true 분기
+        JsonNumber capExp = new JsonNumber("1E5");
+        assert_(capExp.asDouble() == 100000.0,               "대문자 E 지수 asDouble");
     }
 
     // ── JsonObject ────────────────────────────────────────────
@@ -108,6 +112,8 @@ public class JsonModelTest {
         JsonObject single = new JsonObject();
         single.put("k", new JsonString("v"));
         assert_("{\"k\":\"v\"}".equals(single.toString()),     "toString 단일");
+
+        assert_(obj.toString().contains(","),                   "toString 다중 필드 쉼표");
 
         JsonObject empty = new JsonObject();
         assert_("{}".equals(empty.toString()),                  "toString 빈");
@@ -217,6 +223,7 @@ public class JsonModelTest {
         assert_(values[3].isNumber(),  "isNumber");
         assert_(values[4].isBoolean(), "isBoolean");
         assert_(values[5].isNull(),    "isNull");
+        assert_(!values[0].isNull(),   "isNull false 분기 (JsonObject)");
     }
 
     // ── 헬퍼 ────────────────────────────────────────────────

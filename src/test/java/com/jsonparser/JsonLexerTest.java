@@ -19,6 +19,7 @@ public class JsonLexerTest {
         testWhitespaceSkip();
         testEofToken();
         testErrors();
+        testReadNumberEmptyBuffer();
         testJsonParseExceptionMethods();
         System.out.println("\n[JsonLexerTest 결과] " + passed + " 통과 / " + failed + " 실패");
     }
@@ -77,6 +78,8 @@ public class JsonLexerTest {
         assertNumber("2.5E-3", "지수 E-");
         assertNumber("1e+2",   "지수 e+");
         assertNumber("-0",     "-0");
+        assertNumber("1e",     "지수 뒤 입력 끝 (line 125 false, line 128 미진입)");
+        assertNumber("1e10,",  "지수 뒤 비숫자 문자 (line 128 A=true,B=false 분기)");
     }
 
     static void testLiteralTokens() {
@@ -113,6 +116,33 @@ public class JsonLexerTest {
         assertThrows("-",          "단독 마이너스");
         assertThrows("@",          "알 수 없는 문자");
         assertThrows("\"\\",       "역슬래시 후 입력 끝");
+    }
+
+    // ── readNumber() sb.length()==0 분기 (리플렉션) ──────────────
+
+    static void testReadNumberEmptyBuffer() {
+        section("readNumber() — sb가 비어있을 때 예외 (리플렉션)");
+        try {
+            // pos=0, input='@' : '-'도 아니고 digit도 아니어서 sb 빈 채로 throw
+            JsonLexer lexer = new JsonLexer("@");
+            java.lang.reflect.Method m =
+                    JsonLexer.class.getDeclaredMethod("readNumber", int.class);
+            m.setAccessible(true);
+            m.invoke(lexer, 0);
+            System.out.println("    FAIL (예외 미발생)");
+            failed++;
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            if (e.getCause() instanceof JsonParseException) {
+                System.out.println("    PASS: sb.length()==0 → JsonParseException");
+                passed++;
+            } else {
+                System.out.println("    FAIL: 예상치 못한 예외 " + e.getCause());
+                failed++;
+            }
+        } catch (Exception e) {
+            System.out.println("    FAIL: 리플렉션 오류 " + e.getMessage());
+            failed++;
+        }
     }
 
     // ── JsonParseException 메서드 커버리지 ───────────────────────

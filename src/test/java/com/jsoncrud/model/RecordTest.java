@@ -17,6 +17,7 @@ public class RecordTest {
         testGetFieldsImmutable();
         testToJsonObject();
         testFromJsonObject();
+        testFromJsonObjectFieldsNotObject();
         testRoundTrip();
         testToString();
         System.out.println("\n[RecordTest 결과] " + passed + " 통과 / " + failed + " 실패");
@@ -71,6 +72,17 @@ public class RecordTest {
         Record fromNoFields = Record.fromJsonObject(noFields);
         assert_(fromNoFields.getId() == 5,              "id without fields");
         assert_(fromNoFields.getFields().isEmpty(),     "fields 없으면 빈 Map");
+    }
+
+    static void testFromJsonObjectFieldsNotObject() {
+        section("fromJsonObject — fields 키 있지만 비-오브젝트");
+        // has("fields")=true 이지만 isObject()=false → 빈 Map 반환
+        JsonObject obj = new JsonObject();
+        obj.put("id", new com.jsonparser.model.JsonNumber("10"));
+        obj.put("fields", new com.jsonparser.model.JsonString("not_an_object"));
+        Record r = Record.fromJsonObject(obj);
+        assert_(r.getId() == 10,         "id 역직렬화");
+        assert_(r.getFields().isEmpty(), "비-오브젝트 fields → 빈 Map");
     }
 
     static void testRoundTrip() {

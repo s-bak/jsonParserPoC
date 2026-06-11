@@ -32,6 +32,8 @@ public class MenuHandlerTest {
             testReadAllWithRecords();
             testReadByIdFound();
             testReadByIdNotFound();
+            testReadByIdNonNumeric();
+            testReadAllMultiFieldRecord();
             testReadByFieldFound();
             testReadByFieldNotFound();
             testReadByFieldEmptyKey();
@@ -112,6 +114,25 @@ public class MenuHandlerTest {
         section("Read ID 검색 — 비존재");
         String out = run(newService(), "2\n2\n99\n0\n");
         assert_(out.contains("찾을 수 없습니다."), "없는 ID 메시지");
+    }
+
+    static void testReadByIdNonNumeric() throws IOException {
+        section("Read ID 검색 — 숫자 아닌 입력");
+        // handleReadById: readInt → null → return (id==null 분기)
+        String out = run(newService(), "2\n2\nabc\n0\n");
+        assert_(out.contains("숫자를 입력해 주세요."), "숫자 입력 요청");
+    }
+
+    static void testReadAllMultiFieldRecord() throws IOException {
+        section("Read 전체 목록 — 다중 필드 레코드 (printTable 콤마 분기)");
+        RecordService svc = newService();
+        java.util.Map<String, String> fields = new java.util.LinkedHashMap<>();
+        fields.put("name", "Alice");
+        fields.put("email", "alice@example.com");
+        svc.create(fields);
+        String out = run(svc, "2\n1\n0\n");
+        // printTable의 if (fields.length() > 0) → true 분기 커버
+        assert_(out.contains("name=Alice, email=alice@example.com"), "다중 필드 콤마 구분 출력");
     }
 
     static void testReadByFieldFound() throws IOException {

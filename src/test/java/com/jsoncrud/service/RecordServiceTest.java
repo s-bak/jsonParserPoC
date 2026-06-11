@@ -32,6 +32,7 @@ public class RecordServiceTest {
             testFindAllMultiple();
             testFindByIdFound();
             testFindByIdNotFound();
+            testFindByIdNotFoundWithRecords();
             testFindByFieldMatch();
             testFindByFieldNoMatch();
             testFindByFieldKeyNotInRecord();
@@ -130,6 +131,16 @@ public class RecordServiceTest {
     static void testFindByIdNotFound() throws IOException {
         section("findById — 없는 id");
         assert_(newService().findById(999).isEmpty(), "Optional.empty()");
+    }
+
+    static void testFindByIdNotFoundWithRecords() throws IOException {
+        section("findById — 레코드 있지만 없는 id (filter λ false 분기)");
+        // 빈 저장소에서는 filter 람다가 실행되지 않아 false 분기 미커버
+        // 레코드가 있어야 r.getId() == id → false 분기가 실행됨
+        RecordService svc = newService();
+        svc.create(map("name", "Alice")); // id=1
+        Optional<Record> r = svc.findById(99); // 존재하지 않는 id → filter false
+        assert_(r.isEmpty(), "레코드 있어도 없는 id → Optional.empty()");
     }
 
     // ── findByField ───────────────────────────────────────────

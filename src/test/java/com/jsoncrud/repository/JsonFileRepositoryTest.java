@@ -23,8 +23,10 @@ public class JsonFileRepositoryTest {
         try {
             testInitCreatesFile();
             testInitKeepsExistingFile();
+            testInitNullParent();
             testFindAllEmptyFile();
             testFindAllNoRecordsKey();
+            testFindAllRecordsNotArray();
             testSaveAndFindAll();
             testSaveEmptyList();
             testFindAllPreservesOrder();
@@ -60,6 +62,28 @@ public class JsonFileRepositoryTest {
         assert_(records.size() == 1,                         "기존 레코드 보존");
         assert_(records.get(0).getId() == 1,                 "id 보존");
         assert_("Alice".equals(records.get(0).getFields().get("name")), "name 보존");
+    }
+
+    static void testInitNullParent() throws IOException {
+        section("init() — getParent()==null (파일명만 있는 경로)");
+        // java.nio.file.Paths.get("filename").getParent() == null → if 분기 skip
+        String name = "null_parent_test_repo.json";
+        Path p = java.nio.file.Paths.get(name);
+        temps.add(p);
+        Files.deleteIfExists(p);
+        new JsonFileRepository(name);
+        assert_(Files.exists(p), "부모 없는 경로에서도 파일 생성됨");
+        Files.deleteIfExists(p);
+    }
+
+    static void testFindAllRecordsNotArray() throws IOException {
+        section("findAll() — records 키 있지만 배열 아닌 값 → 빈 리스트");
+        Path p = tempPath();
+        Files.writeString(p, "{\"records\":\"not_an_array\"}", StandardCharsets.UTF_8);
+        JsonFileRepository repo = new JsonFileRepository(p.toString());
+        Files.writeString(p, "{\"records\":\"not_an_array\"}", StandardCharsets.UTF_8);
+        List<Record> result = repo.findAll();
+        assert_(result.isEmpty(), "배열 아닌 records → 빈 리스트 반환");
     }
 
     static void testFindAllEmptyFile() throws IOException {

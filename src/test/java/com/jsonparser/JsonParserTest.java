@@ -18,6 +18,7 @@ public class JsonParserTest {
         testEdgeCases();
         testErrorCases();
         testPrettyPrint();
+        testAdvanceAtBoundary();
 
         System.out.println("\n===========================");
         System.out.println("결과: " + passed + " 통과 / " + failed + " 실패");
@@ -164,7 +165,7 @@ public class JsonParserTest {
         assertThrows("tru",               "잘못된 리터럴");
         assertThrows("",                   "빈 입력 (blank)");
         assertThrows(null,                 "null 입력");
-        assertThrows("{} extra",           "루트 이후 여분 토큰");
+        assertThrows("1 2",                "루트 이후 여분 토큰");
         assertThrowsAny(() -> JsonParser.parseObject("[1,2,3]"),   "parseObject에 배열 입력");
         assertThrowsAny(() -> JsonParser.parseArray("{\"k\":1}"),  "parseArray에 객체 입력");
     }
@@ -180,6 +181,37 @@ public class JsonParserTest {
         assert_(pretty.contains("\n"), "줄바꿈 포함");
         assert_(pretty.contains("  "), "들여쓰기 포함");
         System.out.println(pretty);
+    }
+
+    // ---------- advance() 경계 조건 ----------
+
+    static void testAdvanceAtBoundary() {
+        section("advance() — EOF 위치에서 호출 시 pos 불변 (리플렉션)");
+        try {
+            // tokens: [NUMBER, EOF] → size=2, EOF는 인덱스 1
+            java.util.List<JsonToken> tokens = new JsonLexer("1").tokenize();
+            Class<?> clazz = Class.forName("com.jsonparser.JsonParser");
+            java.lang.reflect.Constructor<?> ctor =
+                    clazz.getDeclaredConstructor(java.util.List.class);
+            ctor.setAccessible(true);
+            Object parser = ctor.newInstance(tokens);
+
+            // pos를 마지막 인덱스(EOF 위치)로 설정
+            java.lang.reflect.Field posField = clazz.getDeclaredField("pos");
+            posField.setAccessible(true);
+            posField.set(parser, tokens.size() - 1);  // pos = 1
+
+            // private advance() 호출 → 조건 false → pos++ 실행 안 됨
+            java.lang.reflect.Method advance = clazz.getDeclaredMethod("advance");
+            advance.setAccessible(true);
+            advance.invoke(parser);
+
+            int pos = (int) posField.get(parser);
+            assert_(pos == tokens.size() - 1, "EOF 위치에서 advance() 호출해도 pos 변화 없음");
+        } catch (Exception e) {
+            System.out.println("  FAIL: 리플렉션 오류 — " + e.getMessage());
+            failed++;
+        }
     }
 
     // ---------- 헬퍼 ----------
