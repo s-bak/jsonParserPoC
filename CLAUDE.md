@@ -103,3 +103,9 @@ compile_crud.bat             # CRUD 앱 빌드 & 실행
   - Phase 3 — 콘솔 UI: `docs/design/phase3.md`
   - Phase 4 — 빌드 & 통합 검증: `docs/design/phase4.md`
   - Phase 5 — GitHub Push & 문서화: `docs/design/phase5.md`
+
+## 테스트 플랜 참조
+
+- 전체 테스트 계획 및 케이스 명세: `docs/PLAN_TEST.md`
+- 100% 커버리지 목표, 외부 프레임워크 없이 순수 Java SE로 작성
+- 테스트 실행: `compile_test.bat` → `RunAllTests`
