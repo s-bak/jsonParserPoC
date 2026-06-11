@@ -62,6 +62,9 @@ public class RecordService {
         int index = indexById(records, id);
 
         Map<String, String> updatedFields = new LinkedHashMap<>(records.get(index).getFields());
+        if (!updatedFields.containsKey(fieldKey)) {
+            throw new IllegalArgumentException("필드 '" + fieldKey + "' 가 존재하지 않습니다.");
+        }
         updatedFields.put(fieldKey, newValue);
         Record updated = new Record(id, updatedFields);
         records.set(index, updated);
