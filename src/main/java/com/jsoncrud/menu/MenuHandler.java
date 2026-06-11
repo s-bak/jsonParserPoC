@@ -129,15 +129,11 @@ public class MenuHandler {
         System.out.print("검색할 값 (부분 일치): ");
         String value = scanner.nextLine();
 
-        try {
-            List<Record> results = service.findByField(key, value);
-            if (results.isEmpty()) {
-                System.out.println("검색 결과가 없습니다.");
-            } else {
-                printTable(results);
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+        List<Record> results = service.findByField(key, value);
+        if (results.isEmpty()) {
+            System.out.println("검색 결과가 없습니다.");
+        } else {
+            printTable(results);
         }
     }
 
@@ -169,13 +165,9 @@ public class MenuHandler {
         System.out.print("새로운 값: ");
         String newValue = scanner.nextLine();
 
-        try {
-            Record updated = service.update(id, fieldKey, newValue);
-            System.out.println("\n수정 완료.");
-            printRecord(updated);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        Record updated = service.update(id, fieldKey, newValue);
+        System.out.println("\n수정 완료.");
+        printRecord(updated);
     }
 
     // ── Delete ───────────────────────────────────────────────
@@ -196,12 +188,8 @@ public class MenuHandler {
         System.out.print("\n정말 삭제하시겠습니까? (Y/N): ");
         String confirm = scanner.nextLine().trim();
         if (confirm.equalsIgnoreCase("Y")) {
-            try {
-                service.delete(id);
-                System.out.println("ID " + id + " 이(가) 삭제되었습니다.");
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
+            service.delete(id);
+            System.out.println("ID " + id + " 이(가) 삭제되었습니다.");
         } else {
             System.out.println("삭제를 취소하였습니다.");
         }

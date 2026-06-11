@@ -2,6 +2,7 @@ import com.jsonparser.JsonLexerTest;
 import com.jsonparser.JsonParserTest;
 import com.jsonparser.JsonTokenTest;
 import com.jsonparser.model.JsonModelTest;
+import com.jsoncrud.MainTest;
 import com.jsoncrud.menu.MenuHandlerTest;
 import com.jsoncrud.model.RecordTest;
 import com.jsoncrud.repository.JsonFileRepositoryTest;
@@ -22,6 +23,7 @@ public class RunAllTests {
         run("JsonFileRepositoryTest",  () -> JsonFileRepositoryTest.main(args),  () -> new int[]{JsonFileRepositoryTest.passed,  JsonFileRepositoryTest.failed});
         run("RecordServiceTest",       () -> RecordServiceTest.main(args),       () -> new int[]{RecordServiceTest.passed,       RecordServiceTest.failed});
         run("MenuHandlerTest",         () -> MenuHandlerTest.main(args),         () -> new int[]{MenuHandlerTest.passed,         MenuHandlerTest.failed});
+        run("MainTest",                () -> MainTest.main(args),                () -> new int[]{MainTest.passed,                MainTest.failed});
 
         System.out.println("\n========================================");
         System.out.printf("  전체 결과: %d 통과 / %d 실패%n", totalPassed, totalFailed);

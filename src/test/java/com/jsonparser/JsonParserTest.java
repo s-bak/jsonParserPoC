@@ -164,6 +164,8 @@ public class JsonParserTest {
         assertThrows("tru",               "잘못된 리터럴");
         assertThrows("",                   "빈 입력");
         assertThrows("{} extra",           "루트 이후 여분 토큰");
+        assertThrowsAny(() -> JsonParser.parseObject("[1,2,3]"),   "parseObject에 배열 입력");
+        assertThrowsAny(() -> JsonParser.parseArray("{\"k\":1}"),  "parseArray에 객체 입력");
     }
 
     // ---------- Pretty Print ----------
@@ -201,6 +203,17 @@ public class JsonParserTest {
             System.out.println("  FAIL (예외 미발생): " + label);
             failed++;
         } catch (JsonParseException | IllegalArgumentException e) {
+            System.out.println("  PASS (예외 발생): " + label + " -> " + e.getMessage());
+            passed++;
+        }
+    }
+
+    static void assertThrowsAny(Runnable r, String label) {
+        try {
+            r.run();
+            System.out.println("  FAIL (예외 미발생): " + label);
+            failed++;
+        } catch (Exception e) {
             System.out.println("  PASS (예외 발생): " + label + " -> " + e.getMessage());
             passed++;
         }

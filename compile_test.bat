@@ -45,6 +45,7 @@ javac -encoding UTF-8 -cp %OUT% -d %OUT% ^
   %TSRC%\com\jsoncrud\repository\JsonFileRepositoryTest.java ^
   %TSRC%\com\jsoncrud\service\RecordServiceTest.java ^
   %TSRC%\com\jsoncrud\menu\MenuHandlerTest.java ^
+  %TSRC%\com\jsoncrud\MainTest.java ^
   %TSRC%\RunAllTests.java
 
 if %ERRORLEVEL% neq 0 (

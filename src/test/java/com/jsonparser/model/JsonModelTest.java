@@ -82,6 +82,10 @@ public class JsonModelTest {
 
         JsonNumber longNum = new JsonNumber("9999999999999");
         assert_(longNum.asLong() == 9999999999999L,         "Long 범위");
+
+        // Long 범위 초과 → catch(NumberFormatException) → Double fallback
+        JsonNumber bigNum = new JsonNumber("99999999999999999999");
+        assert_(bigNum.getValue() instanceof Double,         "Long 오버플로 → Double fallback");
     }
 
     // ── JsonObject ────────────────────────────────────────────
